@@ -18,7 +18,7 @@ mongoose.connect(uri).then(res => {
     console.log(err.message);
 })
 
-//UserSchema
+//UserSchema for DB
 const userSchema = new mongoose.Schema({
     _id : String,
     name: String,
