@@ -186,6 +186,30 @@ app.post('/baskets/add', async(req, res)=>{
     } catch (error) {
         res.status(400).json({message: error.message});
     }
+});
+
+//Basket gelAll
+app.post('/baskets/getAll', async(req, res)=>{
+    try {
+        const {userId} = req.body;
+        const baskets = await Basket.aggregate([
+            {
+                $match:{userId:userId}
+            },
+            {
+                $lookup:{
+                    from:"products",
+                    localField:"productId",
+                    foreignField:"_id",
+                    as:"products"
+                }
+            }
+        ]);
+        res.json(baskets);
+        
+    } catch (error) {
+        res.status(400).json({message: error.message});
+    }
 })
 
 const port = 3001;
