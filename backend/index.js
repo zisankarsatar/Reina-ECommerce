@@ -47,9 +47,7 @@ const Product = mongoose.model("Product", productSchema);
 const basketSchema = new mongoose.Schema({
     _id : String,
     productId: String,
-    userId: String,
-    count: Number,
-    price: Number,
+    userId: String
 });
 
 const Basket = mongoose.model("Basket", basketSchema);
@@ -127,7 +125,6 @@ app.get("/products", async(req, res) =>{
 //file save
 const storage = multer.diskStorage({
     destination: function(req, file, cb){
-        console.log(file);
         cb(null,  "uploads/")
     },
     filename: function(req,file,cb){
@@ -163,6 +160,29 @@ app.post('/products/remove', async(req, res)=>{
         const {_id} = req.body;
         await Product.findByIdAndRemove(_id);
         res.json({message: "Product removal successful."})
+    } catch (error) {
+        res.status(400).json({message: error.message});
+    }
+})
+
+//Basket Add
+app.post('/baskets/add', async(req, res)=>{
+    try {
+        const {productId, userId} = req.body;
+        const basket = new Basket({
+            _id: uuidv4(),
+            productId: productId,
+            userId: userId
+        });
+
+        await basket.save();
+
+        let product = await Product.findById(productId);
+        product.stock = product.stock - 1;
+        await Product.findByIdAndUpdate(productId, product);
+
+        res.json({message: "Basket added successful."})
+
     } catch (error) {
         res.status(400).json({message: error.message});
     }
