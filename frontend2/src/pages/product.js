@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
+import { useNavigate } from "react-router-dom";
 
 function ProductComponent() {
     const [products, setProducts] = useState([]);
@@ -7,6 +8,7 @@ function ProductComponent() {
     const [categoryName, setCategoryName] = useState("");
     const [price, setPrice] = useState(0);
     const [stock, setStock] = useState(0);
+    const navigate = useNavigate();
 
     const getAll = async () => {
         const response = await axios.get("http://localhost:3001/products");
@@ -15,6 +17,7 @@ function ProductComponent() {
 
     useEffect(() => {
         getAll();
+        isCheckAdmin();
     }, []);
 
     const remove = async (_id) => {
@@ -24,6 +27,13 @@ function ProductComponent() {
             let response = await axios.post("http://localhost:3001/products/remove", model);
             alert(response.data.message);
             await getAll();
+        }
+    }
+
+    const isCheckAdmin = () =>{
+        const user = JSON.parse(localStorage.getItem("user"));
+        if(!user.isAdmin){
+            navigate("/");
         }
     }
 

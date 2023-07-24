@@ -3,6 +3,7 @@ import {Link, Outlet, useNavigate} from 'react-router-dom';
 
 function LayoutComponent() {
     const navigation = useNavigate();
+    let isAdmin = false;
 
     const logout = () =>{
         localStorage.removeItem('token');
@@ -14,7 +15,14 @@ function LayoutComponent() {
         if(!localStorage.getItem("token")){
             navigation('/login')
         }
-    })    
+    });
+    
+    const isCheckAdmin = () =>{
+        const user = JSON.parse(localStorage.getItem("user"));
+        isAdmin = user.isAdmin;
+    }
+    isCheckAdmin();
+
 
     return (
         <>
@@ -29,9 +37,12 @@ function LayoutComponent() {
                             <li className="nav-item">
                                 <Link to='/'>Home Page</Link>
                             </li>
-                            <li className="nav-item mx-2">
+                            {
+                                isAdmin &&
+                                <li className="nav-item mx-2">
                                 <Link to='/product'>Our Products</Link>
                             </li>
+                            }
                             <li className="nav-item mx-2">
                                 <Link to='/order'>Order</Link>
                             </li>
