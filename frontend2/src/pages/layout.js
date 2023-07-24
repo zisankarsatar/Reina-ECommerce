@@ -19,7 +19,8 @@ function LayoutComponent() {
     
     const isCheckAdmin = () =>{
         const user = JSON.parse(localStorage.getItem("user"));
-        isAdmin = user.isAdmin;
+        if(user){isAdmin = user.isAdmin;}
+        
     }
     isCheckAdmin();
 
