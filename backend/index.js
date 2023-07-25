@@ -13,7 +13,6 @@ app.use(cors());
 app.use(express.json());
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
-const uri= "mongodb+srv://zisan:1@reinaecommerce.qoclgep.mongodb.net/?retryWrites=true&w=majority"
 mongoose.connect(uri).then(res => {
     console.log('Database connection successful');
 }).catch(err => {
@@ -186,8 +185,46 @@ app.post('/baskets/add', async(req, res)=>{
     } catch (error) {
         res.status(400).json({message: error.message});
     }
+});
+
+//Basket gelAll
+app.post('/baskets/getAll', async(req, res)=>{
+    try {
+        const {userId} = req.body;
+        const baskets = await Basket.aggregate([
+            {
+                $match:{userId:userId}
+            },
+            {
+                $lookup:{
+                    from:"products",
+                    localField:"productId",
+                    foreignField:"_id",
+                    as:"products"
+                }
+            }
+        ]);
+        res.json(baskets);
+        
+    } catch (error) {
+        res.status(400).json({message: error.message});
+    }
 })
 
+//Basket remove item
+app.post('/baskets/remove', async(req, res)=>{
+    try {
+        const {_id} = req.body;
+        const basket = await Basket.findById(_id);
+        const product = await Product.findById(basket.productId);
+        product.stock +=1;
+        await Product.findByIdAndUpdate(product._id, product);
+        await Basket.findByIdAndRemove(_id);
+        res.json({message: "Deletion successful."});        
+    } catch (error) {
+        res.status(400).json({message: error.message});
+    }
+})
 const port = 3001;
 app.listen(3001, ()=>{
     console.log("Application running on " + port +" port.")
