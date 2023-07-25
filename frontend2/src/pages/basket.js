@@ -68,7 +68,7 @@ function BasketComponent() {
                                                     <td>{index + 1}</td>
                                                     <td>{basket.products[0].name}</td>
                                                     <td>
-                                                        <img src={"http://localhost:3001/" + basket.products[0].imageUrl} width="75" />
+                                                        <img alt="resim" src={"http://localhost:3001/" + basket.products[0].imageUrl} width="75" />
                                                     </td>
                                                     <td>1</td>
                                                     <td>{basket.products[0].price}</td>
