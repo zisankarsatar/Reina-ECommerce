@@ -1,19 +1,21 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 function BasketComponent() {
+    const navigate = useNavigate();
     const [baskets, setBaskets] = useState([]);
     const [totalPrice, setTotalPrice] = useState(null);
 
-    const gelAll = async () => {
+    const getAll = async () => {
         let user = JSON.parse(localStorage.getItem('user'));
         let model = { userId: user._id };
 
         const response = await axios.post('http://localhost:3001/baskets/getAll', model);
         setBaskets(response.data);
         let totalP = 0;
-        for (let i = 0; i < baskets.length; i++) {
-           totalP += baskets[i].products[0].price
+        for (let i = 0; i < response.data.length; i++) {
+           totalP += response.data[i].products[0].price
         }
         setTotalPrice(totalP);
     }
@@ -23,13 +25,20 @@ function BasketComponent() {
         if(confirm){
             const model = {_id : _id};
             await axios.post('http://localhost:3001/baskets/remove', model);
-            gelAll();
+            getAll();
         }
     }
 
+    const payment = async()=>{
+        const user = JSON.parse(localStorage.getItem('user'));
+        let model = {userId: user._id}
+        await axios.post('http://localhost:3001/orders/add', model);
+        navigate("/order")        
+    }
+
     useEffect(() => {
-        gelAll();
-    },[totalPrice]);
+        getAll();
+    }, [totalPrice]);
 
     return (
         <>
@@ -80,7 +89,7 @@ function BasketComponent() {
                                         <h5 className='text-center'>Toplam Ürün Sayısı: {baskets.length}</h5>
                                         <h5 className='text-center'>Toplam Tutar: {totalPrice}</h5>
                                         <hr />
-                                        <button type='button' className='btn btn-outline-danger w-100'>Payment</button>
+                                        <button onClick={payment} type='button' className='btn btn-outline-danger w-100'>Payment</button>
                                     </div>
                                 </div>
                             </div>
