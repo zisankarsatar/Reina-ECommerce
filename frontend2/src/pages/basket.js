@@ -18,9 +18,18 @@ function BasketComponent() {
         setTotalPrice(totalP);
     }
 
+    const removeItem = async(_id)=>{
+        let confirm = window.confirm("Are you sure you want to delete this product from your cart?");
+        if(confirm){
+            const model = {_id : _id};
+            await axios.post('http://localhost:3001/baskets/remove', model);
+            gelAll();
+        }
+    }
+
     useEffect(() => {
         gelAll();
-    },[]);
+    },[totalPrice]);
 
     return (
         <>
@@ -55,7 +64,7 @@ function BasketComponent() {
                                                     <td>1</td>
                                                     <td>{basket.products[0].price}</td>
                                                     <td>
-                                                        <button className='btn btn-outline-danger btn-sm'>Remove</button>
+                                                        <button onClick={()=>removeItem(basket._id)} className='btn btn-outline-danger btn-sm'>Remove</button>
                                                     </td>
                                                 </tr>
                                             ))
@@ -71,7 +80,7 @@ function BasketComponent() {
                                         <h5 className='text-center'>Toplam Ürün Sayısı: {baskets.length}</h5>
                                         <h5 className='text-center'>Toplam Tutar: {totalPrice}</h5>
                                         <hr />
-                                        <button type='button' className='btn btn-outline-danger w-100'>Ödeme Yap</button>
+                                        <button type='button' className='btn btn-outline-danger w-100'>Payment</button>
                                     </div>
                                 </div>
                             </div>
