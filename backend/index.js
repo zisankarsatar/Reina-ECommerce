@@ -13,7 +13,7 @@ app.use(cors());
 app.use(express.json());
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
-const uri= '';
+const uri= 'mongodb+srv://zisan:1@reinaecommerce.qoclgep.mongodb.net/?retryWrites=true&w=majority';
 mongoose.connect(uri).then(res => {
     console.log('Database connection successful');
 }).catch(err => {
@@ -233,14 +233,36 @@ app.post('/orders/add', async(req, res)=>{
         for(const basket of baskets){
             let order = new Order({
                 _id: uuidv4(),
-                productId: baskets._id,
+                productId: basket.productId,
                 userId: userId
             });
             order.save();
             await Basket.findByIdAndRemove(basket._id);
         }
-        console.log('order done');
         res.json({message: "Order create successful."});        
+    } catch (error) {
+        res.status(400).json({message: error.message});
+    }
+})
+
+//Order List
+app.post('/orders', async(req, res)=>{
+    try {
+        const {userId} = req.body;
+        const orders = await Order.aggregate([
+            {
+                $match: {userId: userId}
+            },
+            {
+                $lookup:{
+                    from: "products",
+                    localField: "productId",
+                    foreignField: "_id",
+                    as: "products"
+                }
+            }
+        ]);
+        res.json(orders);
     } catch (error) {
         res.status(400).json({message: error.message});
     }
