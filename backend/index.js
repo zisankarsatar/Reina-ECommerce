@@ -13,7 +13,7 @@ app.use(cors());
 app.use(express.json());
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
-const uri= "mongodb+srv://zisan:1@reinaecommerce.qoclgep.mongodb.net/?retryWrites=true&w=majority"
+const uri= '';
 mongoose.connect(uri).then(res => {
     console.log('Database connection successful');
 }).catch(err => {
