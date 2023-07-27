@@ -5,7 +5,10 @@ const multer = require('multer');
 const {v4:uuidv4} = require('uuid');
 const jwt = require('jsonwebtoken');
 const path = require("path");
-//const {User, Product, Basket, Order} = require('./schema');
+const User = require('./models/userModel');
+const Product = require('./models/productModel');
+const Order = require('./models/orderModel');
+const Basket = require('./models/basketModel');
 
 const app = express();
 
@@ -19,48 +22,6 @@ mongoose.connect(uri).then(res => {
 }).catch(err => {
     console.log(err.message);
 })
-
-//UserSchema for DB
-const userSchema = new mongoose.Schema({
-    _id : String,
-    name: String,
-    email: String,
-    password: String,
-    isAdmin: Boolean
-});
-
-const User = mongoose.model("User", userSchema);
-
-//ProductSchema
-const productSchema = new mongoose.Schema({
-    _id : String,
-    name: String,
-    categoryName: String,
-    stock: Number,
-    price: Number,
-    imageUrl: String,
-});
-
-const Product = mongoose.model("Product", productSchema);
-
-//BasketSchema
-const basketSchema = new mongoose.Schema({
-    _id : String,
-    productId: String,
-    userId: String
-});
-
-const Basket = mongoose.model("Basket", basketSchema);
-
-//OrderSchema
-const orderSchema = new mongoose.Schema({
-    _id : String,
-    productId: String,
-    userId: String
-});
-
-const Order = mongoose.model("Order", orderSchema);
-
 
 //Token
 const secretKey = "Gizli anahtarim";
