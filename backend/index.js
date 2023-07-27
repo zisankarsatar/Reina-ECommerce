@@ -1,69 +1,21 @@
-const mongoose = require('mongoose');
 const express = require('express');
 const cors = require('cors');
 const multer = require('multer');
 const db = require('./db');
 const {v4:uuidv4} = require('uuid');
-const jwt = require('jsonwebtoken');
 const path = require("path");
-const User = require('./models/userModel');
 const Product = require('./models/productModel');
 const Order = require('./models/orderModel');
 const Basket = require('./models/basketModel');
+const authRouter = require('./routes/auth');
 
 const app = express();
 
 app.use(cors());
 app.use(express.json());
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+app.use('/auth', authRouter);
 
-//Token
-const secretKey = "Gizli anahtarim";
-const option = {
-    expiresIn: "1h"
-}
-
-//register
-app.post("/auth/register", async(req, res)=> {
-    try{
-        const {email, name, password} = req.body;
-        let user = new User({
-            _id : uuidv4(),
-            name: name,
-            email: email, 
-            password: password,
-            isAdmin: false,
-        })
-        await user.save();
-        const payload = {
-            user: user
-        }
-
-        const token = jwt.sign(payload, secretKey, option);
-        res.json({"user":user, "token":token});
-    }catch (error) {
-        res.status(400).json({error: error.message});
-    }
-});
-
-//login
-app.post("/auth/login", async(req, res) => {
-    try {
-        const {email, password} = req.body;
-        const users = await User.find({email: email, password: password});
-        if(users.length === 0 ){
-            res.status(400).json({messsage: "Username or password is wrong."})            
-        }else{
-            const payload = {
-                user: users[0]
-            }
-            const token = jwt.sign(payload, secretKey, option);
-            res.json({user:users[0], token:token})
-        }
-    } catch (error) {
-        res.status(400).json({messsage: "Username or password is wrong."})            
-    }
-})
 
 //product list
 app.get("/products", async(req, res) =>{
