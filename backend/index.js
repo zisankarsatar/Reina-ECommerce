@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const express = require('express');
 const cors = require('cors');
 const multer = require('multer');
+const db = require('./db');
 const {v4:uuidv4} = require('uuid');
 const jwt = require('jsonwebtoken');
 const path = require("path");
@@ -15,13 +16,6 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
-
-const uri= 'mongodb+srv://zisan:1@reinaecommerce.qoclgep.mongodb.net/?retryWrites=true&w=majority';
-mongoose.connect(uri).then(res => {
-    console.log('Database connection successful');
-}).catch(err => {
-    console.log(err.message);
-})
 
 //Token
 const secretKey = "Gizli anahtarim";
