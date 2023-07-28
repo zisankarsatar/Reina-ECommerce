@@ -84,10 +84,10 @@ function BasketComponent() {
                             <div className='col-md-4'>
                                 <div className='card'>
                                     <div className='card-header'>
-                                        <h4 className='text-center'>Sepet Toplamı</h4>
+                                        <h4 className='text-center'>Cart Total</h4>
                                         <hr />
-                                        <h5 className='text-center'>Toplam Ürün Sayısı: {baskets.length}</h5>
-                                        <h5 className='text-center'>Toplam Tutar: {totalPrice}</h5>
+                                        <h5 className='text-center'>Total Number of Products: {baskets.length}</h5>
+                                        <h5 className='text-center'>Total amount: {totalPrice}</h5>
                                         <hr />
                                         <button onClick={payment} type='button' className='btn btn-outline-danger w-100'>Payment</button>
                                     </div>
