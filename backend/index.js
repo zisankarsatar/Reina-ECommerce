@@ -1,6 +1,5 @@
 const express = require('express');
 const cors = require('cors');
-const multer = require('multer');
 const db = require('./db');
 const {v4:uuidv4} = require('uuid');
 const path = require("path");
@@ -8,6 +7,7 @@ const Product = require('./models/productModel');
 const Order = require('./models/orderModel');
 const Basket = require('./models/basketModel');
 const authRouter = require('./routes/auth');
+const productRouter = require('./routes/product');
 
 const app = express();
 
@@ -15,60 +15,7 @@ app.use(cors());
 app.use(express.json());
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use('/auth', authRouter);
-
-
-//product list
-app.get("/products", async(req, res) =>{
-    try {
-        const products = await Product.find({}).sort({name: 1});
-        res.json(products)
-    } catch (error) {
-        res.status(400).json({message: error.message})
-    }
-})
-
-//file save
-const storage = multer.diskStorage({
-    destination: function(req, file, cb){
-        cb(null,  "uploads/")
-    },
-    filename: function(req,file,cb){
-        cb(null, Date.now() + "-" + file.originalname)
-    }
-})
-
-const upload = multer({storage: storage});
-
-//Add Product
-app.post("/products/add" , upload.single('imageUrl'), async(req, res)=>{
-    try {
-        const {name, categoryName, stock, price} = req.body;
-        const product = new Product({
-            _id: uuidv4(),
-            name: name,
-            stock: stock,
-            price: price,
-            categoryName: categoryName,
-            imageUrl: req.file.path,
-        });
-
-        await product.save();
-        res.json({message: "Product registration successful."})
-    } catch (error) {
-        res.status(400).json({message: error.message});
-    }
-})
-
-//Remove Produt
-app.post('/products/remove', async(req, res)=>{
-    try {
-        const {_id} = req.body;
-        await Product.findByIdAndRemove(_id);
-        res.json({message: "Product removal successful."})
-    } catch (error) {
-        res.status(400).json({message: error.message});
-    }
-})
+app.use("/products", productRouter);
 
 //Basket Add
 app.post('/baskets/add', async(req, res)=>{
